@@ -27,7 +27,7 @@ const gRPCDedicatedNodeStream = async () => {
   const stream = await client.subscribe();
   const PING_INTERVAL_MS = 5_000;
 
-  console.log("GRPC Dedicated Node Stream Started");
+  console.log("gRPC Dedicated Node Stream Started");
 
   const streamClosed = new Promise<void>((resolve, reject) => {
     stream.on("error", (error) => {
@@ -58,7 +58,7 @@ const gRPCDedicatedNodeStream = async () => {
         fs.appendFileSync(path.join(process.cwd(), "results", "r1.txt"), message);
       }
     } else if (data.pong) {
-      console.log(`Processed ping response!`);
+      console.log(`Processed ping response from gRPC Dedicated Node!`);
     }
   });
 
@@ -150,6 +150,13 @@ const geyserEnhancedWebsocketStream = async () => {
     };
     ws.send(JSON.stringify(request));
   });
+
+  setInterval(() => {
+    if (ws.readyState === WebSocket.OPEN) {
+      console.log("Pinging Geyser Enhanced Websocket Stream!");
+      ws.ping();
+    }
+  }, 5000);
 
   ws.on("message", async function incoming(data) {
     const messageStr = data.toString("utf8");
