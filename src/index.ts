@@ -41,7 +41,7 @@ const gRPCDedicatedNodeStream = async () => {
     });
   });
 
-  stream.on("data", (data) => {
+  stream.on("data", async (data) => {
     if (data && data.transaction) {
       const convertedTx = convertBuffers(data.transaction);
       const logs = convertedTx.transaction.meta.logMessages;
