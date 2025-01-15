@@ -5,7 +5,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev-index": "ts-node src/index.ts",
-    "dev-counter": "ts-node src/counter.ts"
+    "dev-counter": "ts-node src/counter.ts",
+    "dev-analyser": "ts-node src/analyser.ts"
   },
   "keywords": [],
   "author": "",
