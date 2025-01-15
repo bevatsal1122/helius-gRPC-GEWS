@@ -1,8 +1,8 @@
 import fs from "fs";
 import path from "path";
 
-const calculateTimestampDifferences = async () => {
-  const results1Path = path.join(process.cwd(), "results", "r1.txt");
+const calculateTimestampDifferences1And2 = async () => {
+  const results1Path = path.join(process.cwd(), "results", "r3.txt");
   const results2Path = path.join(process.cwd(), "results", "r2.txt");
   const finalResultsPath = path.join(process.cwd(), "results", "diff.txt");
 
@@ -35,4 +35,39 @@ const calculateTimestampDifferences = async () => {
   fs.writeFileSync(finalResultsPath, differences.join("\n"), "utf-8");
 };
 
-calculateTimestampDifferences().catch(console.error);
+const calculateTimestampDifferences3And2 = async () => {
+  const results3Path = path.join(process.cwd(), "results", "r3.txt");
+  const results2Path = path.join(process.cwd(), "results", "r2.txt");
+  const finalResultsPath = path.join(process.cwd(), "results", "diff.txt");
+
+  const results3Data = fs.readFileSync(results3Path, "utf-8").split("\n");
+  const results2Data = fs.readFileSync(results2Path, "utf-8").split("\n");
+
+  const results3Map: { [key: string]: string } = {};
+  results3Data.forEach((line) => {
+    const [url, timestamp] = line.split(" - ");
+    if (url && timestamp) {
+      results3Map[url] = timestamp;
+    }
+  });
+
+  const differences: string[] = [];
+
+  results2Data.forEach((line) => {
+    const [url, timestamp2] = line.split(" - ");
+    if (url && timestamp2) {
+      const timestamp3 = results3Map[url];
+      if (timestamp3) {
+        const diff =
+          new Date(timestamp2).getTime() - new Date(timestamp3).getTime();
+        console.log(timestamp3, " ", timestamp2, " ", diff);
+        differences.push(`${diff}`);
+      }
+    }
+  });
+
+  fs.writeFileSync(finalResultsPath, differences.join("\n"), "utf-8");
+};
+
+calculateTimestampDifferences1And2().catch(console.error);
+calculateTimestampDifferences3And2().catch(console.error);

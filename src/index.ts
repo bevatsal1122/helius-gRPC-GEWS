@@ -55,7 +55,10 @@ const gRPCDedicatedNodeStream = async () => {
         const signature = convertedTx.transaction.signature;
         const currentTimeStamp = new Date().toISOString();
         const message = `https://solscan.io/tx/${signature} - ${currentTimeStamp}\n`;
-        fs.appendFileSync(path.join(process.cwd(), "results", "r1.txt"), message);
+        fs.appendFileSync(
+          path.join(process.cwd(), "results", "r1.txt"),
+          message
+        );
       }
     } else if (data.pong) {
       console.log(`Processed ping response from gRPC Dedicated Node!`);
@@ -175,7 +178,10 @@ const geyserEnhancedWebsocketStream = async () => {
         ) {
           const currentTimeStamp = new Date().toISOString();
           const message = `https://solscan.io/tx/${signature} - ${currentTimeStamp}\n`;
-          fs.appendFileSync(path.join(process.cwd(), "results", "r2.txt"), message);
+          fs.appendFileSync(
+            path.join(process.cwd(), "results", "r2.txt"),
+            message
+          );
         }
       }
     } catch (e) {
@@ -184,5 +190,47 @@ const geyserEnhancedWebsocketStream = async () => {
   });
 };
 
-gRPCDedicatedNodeStream().catch(console.error);
+const bloXroutePumpfunStream = async () => {
+  const ws = new WebSocket("wss://pump-ny.solana.dex.blxrbdn.com/ws", {
+    headers: {
+      Authorization: process.env.BLOXROUTE_AUTH_HEADER,
+    },
+  });
+
+  ws.on("open", () => {
+    ws.send(
+      JSON.stringify({
+        jsonrpc: "2.0",
+        id: 1,
+        method: "subscribe",
+        params: ["GetPumpFunNewTokensStream", {}],
+      })
+    );
+    console.log("BloXroute Pumpfun Websocket Stream Started");
+  });
+
+  ws.on("message", async (data: any) => {
+    try {
+      const parsedData: any = JSON.parse(data.toString());
+      if (parsedData && parsedData.params) {
+        const signature = parsedData.params.result.txnHash;
+        const currentTimeStamp = new Date().toISOString();
+        const message = `https://solscan.io/tx/${signature} - ${currentTimeStamp}\n`;
+        fs.appendFileSync(
+          path.join(process.cwd(), "results", "r3.txt"),
+          message
+        );
+      }
+    } catch (error) {
+      console.error("Error processing message:", error);
+    }
+  });
+
+  ws.on("error", (error) => {
+    console.error("BloXroute Pumpfun WebSocket error:", error);
+  });
+};
+
+// gRPCDedicatedNodeStream().catch(console.error);
 geyserEnhancedWebsocketStream().catch(console.error);
+bloXroutePumpfunStream().catch(console.error);
