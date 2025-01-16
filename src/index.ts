@@ -231,6 +231,6 @@ const bloXroutePumpfunStream = async () => {
   });
 };
 
-// gRPCDedicatedNodeStream().catch(console.error);
-geyserEnhancedWebsocketStream().catch(console.error);
+gRPCDedicatedNodeStream().catch(console.error);
+// geyserEnhancedWebsocketStream().catch(console.error);
 bloXroutePumpfunStream().catch(console.error);
